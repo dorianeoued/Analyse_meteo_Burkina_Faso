@@ -47,12 +47,16 @@
   <!-- ── Recherche culturale ── -->
   <div class="culture-section" id="cultures">
     <div class="culture-section-header">
-      <div>
-        <div class="culture-section-title">🌱 Calendrier cultural</div>
-        <div class="culture-section-sub">Sélectionnez une culture pour connaître la période optimale de semis et de récolte selon la zone climatique</div>
-      </div>
+      <div class="culture-section-title">🌱 Calendrier cultural</div>
+      <div class="culture-section-sub">Recherchez une culture pour connaître la période optimale de semis, de récolte et sa viabilité selon la zone climatique</div>
     </div>
-    <div id="culture-buttons" class="culture-buttons"></div>
+    <div class="search-wrapper">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input id="culture-search" type="text" placeholder="Ex : maïs, sorgho, tomate, karité…" autocomplete="off" />
+      </div>
+      <div id="culture-suggestions" class="culture-suggestions"></div>
+    </div>
     <div id="culture-result"></div>
   </div>
 
