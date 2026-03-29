@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Météo Burkina Faso – Analyse climatique 1990–2023</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Overlay de chargement ── -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p style="color:#555;font-size:.95rem;">Chargement des données…</p>
+</div>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <a href="#" class="navbar-brand">
+    <div class="logo-icon">🌦</div>
+    <span>Météo Burkina Faso</span>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="#precip" class="active">Précipitations</a></li>
+    <li><a href="#temperatures">Températures</a></li>
+    <li><a href="#anomalies">Anomalies</a></li>
+    <li><a href="#saison">Saison des pluies</a></li>
+    <li><a href="#tableau">Tableau</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero bar ── -->
+<div class="hero-bar">
+  <div class="hero-stat"><div class="val">6</div><div class="lbl">Villes analysées</div></div>
+  <div class="hero-stat"><div class="val">34</div><div class="lbl">Années de données</div></div>
+  <div class="hero-stat"><div class="val">5</div><div class="lbl">Analyses produites</div></div>
+  <div class="hero-stat"><div class="val" id="hero-pluie">–</div><div class="lbl">Pluie moy. nationale (mm)</div></div>
+  <div class="hero-stat"><div class="val" id="hero-tmax">–</div><div class="lbl">Tmax moy. nationale (°C)</div></div>
+  <div class="hero-stat"><div class="val">NASA</div><div class="lbl">Source : NASA POWER</div></div>
+</div>
+
+<!-- ── Contenu principal ── -->
+<div class="container">
+
+  <!-- Filtres ville -->
+  <div class="filtres-section">
+    <label>Filtrer par ville :</label>
+    <div id="btn-villes"></div>
+  </div>
+
+  <!-- Grille des graphiques -->
+  <div class="charts-grid">
+
+    <!-- Chart 1 : Cumul annuel – full width -->
+    <div class="chart-card full-width" id="precip">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Cumul annuel des précipitations</div>
+          <div class="chart-subtitle">Total annuel en mm – toutes les villes</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chartCumul"></canvas></div>
+    </div>
+
+    <!-- Chart 2 : Climatologie mensuelle -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Climatologie mensuelle</div>
+          <div class="chart-subtitle">Précipitations moyennes (mm/jour) par mois</div>
+        </div>
+        <div class="chart-controls">
+          <select id="selectVilleClim"></select>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chartClim"></canvas></div>
+    </div>
+
+    <!-- Chart 3 : Températures max -->
+    <div class="chart-card" id="temperatures">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Températures maximales annuelles</div>
+          <div class="chart-subtitle">Moyenne annuelle de T2M_MAX (°C)</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chartTemp"></canvas></div>
+    </div>
+
+    <!-- Chart 4 : Anomalies nationales – full width -->
+    <div class="chart-card full-width" id="anomalies">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Anomalies nationales de précipitations</div>
+          <div class="chart-subtitle">Écart à la normale (%) – moyenne de toutes les villes</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chartAnom"></canvas></div>
+    </div>
+
+    <!-- Chart 5 : Début de saison -->
+    <div class="chart-card full-width" id="saison">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Début de saison des pluies</div>
+          <div class="chart-subtitle">Jour de l'année du premier épisode ≥ 20 mm sur 3 jours après le 1er avril</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:340px"><canvas id="chartSaison"></canvas></div>
+    </div>
+
+  </div><!-- /charts-grid -->
+
+  <!-- Tableau récapitulatif -->
+  <div class="stats-section" id="tableau">
+    <h2>Statistiques climatiques par ville (1990–2023)</h2>
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>Ville</th>
+          <th>Pluie annuelle moy. (mm)</th>
+          <th>Tmax moy. (°C)</th>
+          <th>Tmin moy. (°C)</th>
+          <th>Humidité moy. (%)</th>
+        </tr>
+      </thead>
+      <tbody id="statsTableBody"></tbody>
+    </table>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  Données : <span>NASA POWER</span> &nbsp;|&nbsp; <span>Flask + Chart.js</span> &nbsp;|&nbsp; Analyse 1990–2023
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
