@@ -1,0 +1,12 @@
+# Fichier de notes internes — ne pas publier
+notes_qualite_donnees.txt
+
+# Données brutes téléchargées
+donnees/
+
+# Rapport PDF
+rapport_meteo_burkina.pdf
+
+# Fichiers Python compilés
+__pycache__/
+*.pyc

@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analyse Météorologique du Burkina Faso</title>
+
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+  <style>
+    /* ===== VARIABLES & RESET ===== */
+    :root {
+      --red:    #EF2B2D;
+      --green:  #009A00;
+      --yellow: #FCD116;
+      --dark:   #1a1a2e;
+      --dark2:  #16213e;
+      --dark3:  #0f3460;
+      --white:  #ffffff;
+      --gray-light: #f5f6fa;
+      --gray-mid:   #e8eaf0;
+      --text:   #2d3436;
+      --text-muted: #636e72;
+      --shadow: 0 4px 20px rgba(0,0,0,0.10);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.18);
+      --radius: 10px;
+      --nav-h: 64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.7;
+    }
+
+    /* ===== NAVBAR ===== */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 1000;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-flag {
+      display: flex;
+      flex-direction: column;
+      width: 28px;
+      height: 20px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .nav-flag span { flex: 1; display: block; }
+    .nav-flag .f-red    { background: var(--red); }
+    .nav-flag .f-green  { background: var(--green); }
+
+    .nav-brand-text {
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .nav-brand-text span { color: var(--yellow); }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--yellow);
+      background: rgba(252,209,22,0.12);
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* ===== HERO ===== */
+    #accueil {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark3) 60%, #1a3a1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--nav-h) + 2rem) 2rem 4rem;
+      text-align: center;
+    }
+
+    .hero-inner { max-width: 820px; }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(252,209,22,0.15);
+      border: 1px solid rgba(252,209,22,0.4);
+      color: var(--yellow);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.9rem, 5vw, 3.2rem);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .hero-title .accent-red    { color: var(--red); }
+    .hero-title .accent-yellow { color: var(--yellow); }
+    .hero-title .accent-green  { color: #4cff4c; }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2.5rem;
+    }
+    .hero-subtitle strong { color: var(--yellow); }
+
+    .hero-divider {
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+      border-radius: 2px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .stat-cards {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      padding: 1.4rem 2rem;
+      min-width: 160px;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.14);
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--yellow);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.65);
+      font-weight: 500;
+    }
+
+    /* ===== SECTIONS SHARED ===== */
+    section {
+      padding: 5rem 2rem;
+    }
+
+    .section-alt { background: var(--gray-light); }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+      background: rgba(0,154,0,0.1);
+      padding: 0.3rem 0.85rem;
+      border-radius: 20px;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title span { color: var(--red); }
+
+    .section-lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin-bottom: 2.5rem;
+    }
+
+    .title-bar {
+      width: 50px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--yellow));
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ===== DONNEES TABLE ===== */
+    .data-source-box {
+      background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+      border-left: 5px solid var(--green);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .data-source-box h3 {
+      color: var(--dark);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .data-source-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .data-source-box a { color: var(--green); font-weight: 600; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      font-size: 0.95rem;
+    }
+
+    thead {
+      background: var(--dark);
+      color: var(--white);
+    }
+
+    thead th {
+      padding: 1rem 1.2rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    thead th:first-child { border-radius: var(--radius) 0 0 0; }
+    thead th:last-child  { border-radius: 0 var(--radius) 0 0; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--gray-mid);
+      transition: background 0.2s, transform 0.15s;
+      cursor: default;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover {
+      background: rgba(0,154,0,0.06);
+      transform: scale(1.005);
+    }
+
+    tbody td {
+      padding: 0.9rem 1.2rem;
+      vertical-align: middle;
+    }
+
+    .city-name {
+      font-weight: 700;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .city-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .badge-val {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .badge-pluie { background: rgba(14,118,188,0.12); color: #0e76bc; }
+    .badge-chaud { background: rgba(239,43,45,0.1);  color: var(--red); }
+    .badge-froid { background: rgba(0,154,0,0.1);    color: var(--green); }
+    .badge-hum   { background: rgba(100,100,200,0.1); color: #5555cc; }
+
+    /* Quality box */
+    .quality-box {
+      background: #fff8e1;
+      border-left: 5px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.2rem 1.5rem;
+      margin-top: 1rem;
+    }
+    .quality-box h3 {
+      color: var(--dark);
+      margin-bottom: 0.6rem;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .quality-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .quality-box ul li {
+      padding: 0.3rem 0;
+      color: var(--text);
+      font-size: 0.95rem;
+      display: flex;
+      gap: 0.6rem;
+    }
+    .quality-box ul li::before { content: "▸"; color: var(--yellow); }
+
+    /* ===== GRAPHIQUES ===== */
+    .graphique-block {
+      padding: 4rem 2rem;
+    }
+    .graphique-block:nth-child(even) { background: var(--gray-light); }
+
+    .graphique-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .graphique-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .graphique-num {
+      background: var(--dark);
+      color: var(--yellow);
+      font-size: 1.1rem;
+      font-weight: 800;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .graphique-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .graphique-img-wrap {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    .graphique-img-wrap img {
+      max-width: 900px;
+      width: 100%;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-mid);
+      background: var(--gray-light);
+    }
+
+    .img-placeholder {
+      max-width: 900px;
+      width: 100%;
+      height: 350px;
+      background: linear-gradient(135deg, #e8eaf0, #d0d4e0);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      border: 2px dashed #b0b8cc;
+      color: #7a8299;
+      font-size: 0.95rem;
+    }
+    .img-placeholder .ph-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+    .interpretation {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.8rem;
+      box-shadow: var(--shadow);
+      border-top: 3px solid var(--green);
+    }
+    .interpretation h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.9rem;
+    }
+    .interpretation ul {
+      list-style: none;
+      padding: 0;
+    }
+    .interpretation ul li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.45rem 0;
+      color: var(--text);
+      border-bottom: 1px solid var(--gray-mid);
+      font-size: 0.97rem;
+    }
+    .interpretation ul li:last-child { border-bottom: none; }
+    .interpretation ul li::before {
+      content: "●";
+      color: var(--green);
+      font-size: 0.55rem;
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ===== METHODES CARDS ===== */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.4rem;
+      margin-top: 2rem;
+    }
+
+    .method-card {
+      background: var(--white);
+      border: 2px solid var(--gray-mid);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      cursor: default;
+    }
+    .method-card:hover {
+      border-color: var(--green);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px);
+    }
+
+    .method-icon {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    .method-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+    .method-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .method-tag {
+      display: inline-block;
+      margin-top: 0.7rem;
+      font-size: 0.75rem;
+      background: rgba(0,154,0,0.1);
+      color: var(--green);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ===== CODE TABS ===== */
+    .code-tabs {
+      margin-top: 2rem;
+    }
+
+    .tab-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0;
+    }
+
+    .tab-btn {
+      background: var(--gray-mid);
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-family: 'Consolas', 'Courier New', monospace;
+      letter-spacing: 0.3px;
+    }
+    .tab-btn:hover { background: #d0d4dc; color: var(--dark); }
+    .tab-btn.active {
+      background: #282c34;
+      color: var(--yellow);
+    }
+
+    .tab-panel {
+      display: none;
+      border-radius: 0 var(--radius) var(--radius) var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .tab-panel.active { display: block; }
+
+    .tab-panel pre {
+      margin: 0;
+      border-radius: 0 var(--radius) var(--radius) var(--radius);
+    }
+
+    .tab-panel pre code.hljs {
+      padding: 1.8rem;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      border-radius: 0 var(--radius) var(--radius) var(--radius);
+    }
+
+    .code-filename {
+      background: #21252b;
+      color: #abb2bf;
+      font-size: 0.8rem;
+      padding: 0.5rem 1.2rem;
+      font-family: 'Consolas', 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .code-filename::before {
+      content: "🐍";
+      font-size: 0.9rem;
+    }
+
+    /* ===== CONCLUSIONS ===== */
+    .conclusion-timeline {
+      position: relative;
+      padding-left: 2rem;
+      margin-top: 2rem;
+    }
+    .conclusion-timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--red), var(--yellow), var(--green));
+      border-radius: 2px;
+    }
+
+    .conclusion-item {
+      position: relative;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 1.4rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid transparent;
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+    .conclusion-item:hover {
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--green);
+    }
+
+    .conclusion-item::before {
+      content: '';
+      position: absolute;
+      left: -2.7rem;
+      top: 1.5rem;
+      width: 16px;
+      height: 16px;
+      background: var(--white);
+      border: 3px solid var(--green);
+      border-radius: 50%;
+    }
+
+    .conclusion-num {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .conclusion-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+    .conclusion-text {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .conclusion-highlight {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--dark);
+      font-weight: 700;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.88rem;
+    }
+    footer strong { color: var(--yellow); }
+    .footer-flag {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 0.8rem;
+    }
+    .footer-flag span {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+
+    /* ===== BACK TO TOP ===== */
+    #back-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 42px;
+      height: 42px;
+      background: var(--dark3);
+      color: var(--yellow);
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: opacity 0.3s, transform 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #back-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #back-top:hover { transform: translateY(-3px); background: var(--green); }
+
+    /* ===== SCROLL PROGRESS ===== */
+    #scroll-progress {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+      z-index: 999;
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: var(--nav-h);
+        left: 0; right: 0;
+        background: var(--dark2);
+        padding: 1rem;
+        gap: 0.25rem;
+      }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: flex; }
+
+      .stat-cards { gap: 0.8rem; }
+      .stat-card { min-width: 130px; padding: 1rem 1.4rem; }
+      .stat-number { font-size: 1.8rem; }
+
+      .methods-grid { grid-template-columns: 1fr; }
+
+      .tab-buttons { gap: 0.3rem; }
+      .tab-btn { font-size: 0.8rem; padding: 0.5rem 0.9rem; }
+
+      .conclusion-timeline { padding-left: 1.5rem; }
+      .conclusion-item::before { left: -2.2rem; }
+    }
+
+    @media (max-width: 480px) {
+      section { padding: 3.5rem 1.2rem; }
+      .graphique-block { padding: 3rem 1.2rem; }
+    }
+
+    /* ===== UTILITIES ===== */
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    code.inline {
+      background: rgba(0,154,0,0.1);
+      color: var(--green);
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.9em;
+      padding: 0.1em 0.45em;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== SCROLL PROGRESS ===== -->
+<div id="scroll-progress"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <a class="nav-brand" href="#accueil">
+    <div class="nav-flag">
+      <span class="f-red"></span>
+      <span class="f-green"></span>
+    </div>
+    <span class="nav-brand-text">Burkina <span>Météo</span></span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#accueil"     class="nav-link active">Accueil</a></li>
+    <li><a href="#donnees"     class="nav-link">Données</a></li>
+    <li><a href="#graphiques"  class="nav-link">Graphiques</a></li>
+    <li><a href="#methodes"    class="nav-link">Méthodes</a></li>
+    <li><a href="#code"        class="nav-link">Code</a></li>
+    <li><a href="#conclusions" class="nav-link">Conclusions</a></li>
+  </ul>
+  <div class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="accueil">
+  <div class="hero-inner">
+    <div class="hero-badge">Projet d'analyse de données</div>
+    <h1 class="hero-title">
+      Analyse <span class="accent-red">Météorologique</span><br />
+      du <span class="accent-yellow">Burkina</span> <span class="accent-green">Faso</span>
+    </h1>
+    <div class="hero-divider"></div>
+    <p class="hero-subtitle">
+      <strong>NASA POWER</strong> &nbsp;|&nbsp; 1990–2023 &nbsp;|&nbsp; 6 villes analysées
+    </p>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-number">6</div>
+        <div class="stat-label">Villes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">33</div>
+        <div class="stat-label">Ans de données</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">5</div>
+        <div class="stat-label">Analyses</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DONNÉES ===== -->
+<section id="donnees" class="section-alt">
+  <div class="container">
+    <div class="section-tag">Source & Qualité</div>
+    <h2 class="section-title">Les <span>Données</span></h2>
+    <div class="title-bar"></div>
+    <p class="section-lead">
+      Les données météorologiques couvrent 33 ans (1990–2023) pour 6 villes représentatives
+      du Burkina Faso, du Sahel au Sud soudanien.
+    </p>
+
+    <div class="data-source-box">
+      <h3>📡 Source : NASA POWER (Prediction Of Worldwide Energy Resources)</h3>
+      <p>
+        L'API <a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">NASA POWER</a>
+        fournit des données climatiques journalières dérivées des observations satellitaires et
+        des réanalyses atmosphériques. Quatre paramètres ont été téléchargés : précipitations
+        corrigées (<code class="inline">PRECTOTCORR</code>), température maximale
+        (<code class="inline">T2M_MAX</code>), température minimale
+        (<code class="inline">T2M_MIN</code>) et humidité relative (<code class="inline">RH2M</code>).
+        Communauté agricole (<code class="inline">AG</code>), résolution journalière, format JSON.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ville</th>
+            <th>Pluie annuelle moy.</th>
+            <th>Tmax moy.</th>
+            <th>Tmin moy.</th>
+            <th>Humidité moy.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="city-name"><span class="city-dot" style="background:#009A00"></span>Bobo-Dioulasso</span></td>
+            <td><span class="badge-val badge-pluie">1 110,9 mm</span></td>
+            <td><span class="badge-val badge-chaud">33,6 °C</span></td>
+            <td><span class="badge-val badge-froid">21,2 °C</span></td>
+            <td><span class="badge-val badge-hum">56,3 %</span></td>
+          </tr>
+          <tr>
+            <td><span class="city-name"><span class="city-dot" style="background:#FCD116"></span>Dedougou</span></td>
+            <td><span class="badge-val badge-pluie">839,6 mm</span></td>
+            <td><span class="badge-val badge-chaud">35,3 °C</span></td>
+            <td><span class="badge-val badge-froid">21,9 °C</span></td>
+            <td><span class="badge-val badge-hum">46,6 %</span></td>
+          </tr>
+          <tr>
+            <td><span class="city-name"><span class="city-dot" style="background:#EF2B2D"></span>Dori</span></td>
+            <td><span class="badge-val badge-pluie">516,4 mm</span></td>
+            <td><span class="badge-val badge-chaud">36,0 °C</span></td>
+            <td><span class="badge-val badge-froid">22,0 °C</span></td>
+            <td><span class="badge-val badge-hum">38,4 %</span></td>
+          </tr>
+          <tr>
+            <td><span class="city-name"><span class="city-dot" style="background:#e67e22"></span>Fada N'Gourma</span></td>
+            <td><span class="badge-val badge-pluie">799,4 mm</span></td>
+            <td><span class="badge-val badge-chaud">34,8 °C</span></td>
+            <td><span class="badge-val badge-froid">21,9 °C</span></td>
+            <td><span class="badge-val badge-hum">50,3 %</span></td>
+          </tr>
+          <tr>
+            <td><span class="city-name"><span class="city-dot" style="background:#27ae60"></span>Gaoua</span></td>
+            <td><span class="badge-val badge-pluie">1 078,1 mm</span></td>
+            <td><span class="badge-val badge-chaud">33,7 °C</span></td>
+            <td><span class="badge-val badge-froid">21,4 °C</span></td>
+            <td><span class="badge-val badge-hum">59,4 %</span></td>
+          </tr>
+          <tr>
+            <td><span class="city-name"><span class="city-dot" style="background:#8e44ad"></span>Ouagadougou</span></td>
+            <td><span class="badge-val badge-pluie">809,5 mm</span></td>
+            <td><span class="badge-val badge-chaud">35,1 °C</span></td>
+            <td><span class="badge-val badge-froid">21,3 °C</span></td>
+            <td><span class="badge-val badge-hum">49,1 %</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quality-box">
+      <h3>⚠️ Qualité des données</h3>
+      <ul>
+        <li>
+          <strong>Valeurs manquantes gérées :</strong> NASA POWER encode les données manquantes
+          avec la valeur sentinelle <code class="inline">-999.0</code>. Celles-ci ont été
+          remplacées par <code class="inline">NaN</code> (pandas) avant tout calcul, afin
+          d'éviter des biais dans les statistiques.
+        </li>
+        <li>
+          <strong>Valeurs extrêmes non traitées :</strong> Aucun filtre sur les valeurs
+          aberrantes (ex. précipitations > 300 mm/jour) n'a été appliqué. Ces événements
+          extrêmes rares, bien que physiquement plausibles au Sahel lors de lignes de grains
+          intenses, peuvent légèrement biaiser les moyennes annuelles.
+        </li>
+        <li>
+          <strong>Données satellitaires vs stations :</strong> Les données NASA POWER sont
+          issues de modèles de réanalyse et peuvent différer des mesures in-situ pour des
+          événements locaux très intenses.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GRAPHIQUES ===== -->
+<section id="graphiques" style="padding:0;">
+  <div style="padding:4rem 2rem 2rem; max-width:1000px; margin:0 auto;">
+    <div class="section-tag">Visualisations</div>
+    <h2 class="section-title">Graphiques &amp; <span>Analyses</span></h2>
+    <div class="title-bar"></div>
+    <p class="section-lead">
+      Cinq analyses visuelles couvrant les précipitations, les températures,
+      la saisonnalité et les anomalies climatiques sur 33 ans.
+    </p>
+  </div>
+
+  <!-- G1 -->
+  <div class="graphique-block">
+    <div class="graphique-inner">
+      <div class="graphique-header">
+        <div class="graphique-num">01</div>
+        <div>
+          <div class="graphique-title">Cumul annuel des précipitations</div>
+          <div style="color:var(--text-muted);font-size:0.9rem;">Évolution 1990–2023 · Tendances linéaires</div>
+        </div>
+      </div>
+      <div class="graphique-img-wrap">
+        <img
+          src="../graphiques/01_cumul_annuel.png"
+          alt="Cumul annuel des précipitations 1990-2023"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+        />
+        <div class="img-placeholder" style="display:none;">
+          <div class="ph-icon">🌧️</div>
+          <div>graphiques/01_cumul_annuel.png</div>
+        </div>
+      </div>
+      <div class="interpretation">
+        <h4>Interprétation</h4>
+        <ul>
+          <li>Les précipitations montrent une tendance à la hausse sur tout le territoire entre 1990 et 2023.</li>
+          <li>Dori (zone sahélienne) reste nettement plus sèche : 400–600 mm/an contre 900–1 500 mm au Sud.</li>
+          <li>2002 est l'année la plus sèche (−29 %), 2020 l'année la plus pluvieuse (Bobo dépasse 1 500 mm).</li>
+          <li>La forte variabilité interannuelle (écarts de 400–500 mm) est le principal défi pour l'agriculture.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- G2 -->
+  <div class="graphique-block">
+    <div class="graphique-inner">
+      <div class="graphique-header">
+        <div class="graphique-num">02</div>
+        <div>
+          <div class="graphique-title">Climatologie mensuelle et semis du maïs</div>
+          <div style="color:var(--text-muted);font-size:0.9rem;">Répartition saisonnière · Fenêtres de semis</div>
+        </div>
+      </div>
+      <div class="graphique-img-wrap">
+        <img
+          src="../graphiques/02_climatologie_mensuelle.png"
+          alt="Climatologie mensuelle et semis du maïs"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+        />
+        <div class="img-placeholder" style="display:none;">
+          <div class="ph-icon">📅</div>
+          <div>graphiques/02_climatologie_mensuelle.png</div>
+        </div>
+      </div>
+      <div class="interpretation">
+        <h4>Interprétation</h4>
+        <ul>
+          <li>La saison des pluies est concentrée entre juin et septembre dans toutes les villes.</li>
+          <li>Bobo-Dioulasso et Gaoua (Sud) : semis possible dès fin mai (4–5 mm/jour en mai).</li>
+          <li>Ouagadougou, Dedougou, Fada (Centre) : juin plus sûr pour semer (2–3 mm/jour en mai).</li>
+          <li>Dori (Nord-Sahel) : maïs déconseillé, privilégier mil et sorgho, semis en juillet.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- G3 -->
+  <div class="graphique-block">
+    <div class="graphique-inner">
+      <div class="graphique-header">
+        <div class="graphique-num">03</div>
+        <div>
+          <div class="graphique-title">Tendance des températures maximales</div>
+          <div style="color:var(--text-muted);font-size:0.9rem;">Réchauffement 1990–2023 · Régression linéaire</div>
+        </div>
+      </div>
+      <div class="graphique-img-wrap">
+        <img
+          src="../graphiques/03_tendance_temperature.png"
+          alt="Tendance des températures maximales"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+        />
+        <div class="img-placeholder" style="display:none;">
+          <div class="ph-icon">🌡️</div>
+          <div>graphiques/03_tendance_temperature.png</div>
+        </div>
+      </div>
+      <div class="interpretation">
+        <h4>Interprétation</h4>
+        <ul>
+          <li>Réchauffement réel et généralisé sur tout le Burkina Faso.</li>
+          <li>Bobo-Dioulasso : +1,0 °C en 33 ans — la hausse la plus forte parmi les villes analysées.</li>
+          <li>Chaque +1 °C réduit le rendement du maïs de 5 à 10 % selon les études agronomiques.</li>
+          <li>Dori dépasse 36 °C de température max moyenne — à la limite du supportable pour les cultures.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- G4 -->
+  <div class="graphique-block">
+    <div class="graphique-inner">
+      <div class="graphique-header">
+        <div class="graphique-num">04</div>
+        <div>
+          <div class="graphique-title">Début de la saison des pluies</div>
+          <div style="color:var(--text-muted);font-size:0.9rem;">Détection agronomique · Jour julien · 1990–2023</div>
+        </div>
+      </div>
+      <div class="graphique-img-wrap">
+        <img
+          src="../graphiques/04_debut_saison_pluies.png"
+          alt="Début de la saison des pluies"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+        />
+        <div class="img-placeholder" style="display:none;">
+          <div class="ph-icon">🌱</div>
+          <div>graphiques/04_debut_saison_pluies.png</div>
+        </div>
+      </div>
+      <div class="interpretation">
+        <h4>Interprétation</h4>
+        <ul>
+          <li>La saison commence légèrement plus tôt qu'en 1990 (tendances descendantes sur le graphe).</li>
+          <li>Gaoua et Bobo (Sud) : début autour du 1er mai (jour julien ~121).</li>
+          <li>Ouagadougou et Dedougou (Centre) : début autour du 1er juin (jour julien ~152).</li>
+          <li>Dori (Nord) : très variable, entre mai et août certaines années — planification impossible.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- G5 -->
+  <div class="graphique-block">
+    <div class="graphique-inner">
+      <div class="graphique-header">
+        <div class="graphique-num">05</div>
+        <div>
+          <div class="graphique-title">Anomalies nationales des précipitations</div>
+          <div style="color:var(--text-muted);font-size:0.9rem;">Écart en % par rapport à la moyenne de référence</div>
+        </div>
+      </div>
+      <div class="graphique-img-wrap">
+        <img
+          src="../graphiques/05_anomalies_precipitations.png"
+          alt="Anomalies nationales des précipitations"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+        />
+        <div class="img-placeholder" style="display:none;">
+          <div class="ph-icon">📊</div>
+          <div>graphiques/05_anomalies_precipitations.png</div>
+        </div>
+      </div>
+      <div class="interpretation">
+        <h4>Interprétation</h4>
+        <ul>
+          <li>Basculement climatique majeur : période sèche 1990–2004, période pluvieuse depuis 2008.</li>
+          <li>2002 : anomalie de −29 % par rapport à la moyenne nationale — pire année de la série.</li>
+          <li>Depuis 2008 : anomalies positives régulières de +15 à +18 %.</li>
+          <li>Cette reprise est cohérente avec la ré-verdification partielle du Sahel ouest-africain.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MÉTHODES ===== -->
+<section id="methodes" class="section-alt">
+  <div class="container">
+    <div class="section-tag">Approche analytique</div>
+    <h2 class="section-title">Notions d'Analyse <span>Appliquées</span></h2>
+    <div class="title-bar"></div>
+    <p class="section-lead">
+      Six techniques d'analyse de données utilisées dans ce projet,
+      appliquées avec Python (pandas, numpy, matplotlib).
+    </p>
+
+    <div class="methods-grid">
+
+      <div class="method-card">
+        <span class="method-icon">🧹</span>
+        <div class="method-title">Nettoyage des données</div>
+        <div class="method-desc">
+          Remplacement des valeurs sentinelles <code class="inline">-999.0</code>
+          par <code class="inline">NaN</code> (pandas) pour neutraliser les données
+          manquantes sans biaiser les calculs statistiques.
+        </div>
+        <span class="method-tag">Prétraitement</span>
+      </div>
+
+      <div class="method-card">
+        <span class="method-icon">📅</span>
+        <div class="method-title">Rééchantillonnage temporel</div>
+        <div class="method-desc">
+          Agrégation des données journalières vers des échelles mensuelles puis annuelles
+          via <code class="inline">groupby</code> et <code class="inline">resample</code>,
+          en adaptant la fonction d'agrégation (somme, moyenne) au paramètre.
+        </div>
+        <span class="method-tag">Séries temporelles</span>
+      </div>
+
+      <div class="method-card">
+        <span class="method-icon">📈</span>
+        <div class="method-title">Analyse de tendance</div>
+        <div class="method-desc">
+          Régression linéaire par moindres carrés (<code class="inline">np.polyfit</code>)
+          sur 33 ans pour quantifier la direction et l'amplitude des évolutions
+          de précipitations et de températures.
+        </div>
+        <span class="method-tag">Régression linéaire</span>
+      </div>
+
+      <div class="method-card">
+        <span class="method-icon">📊</span>
+        <div class="method-title">Calcul d'anomalies</div>
+        <div class="method-desc">
+          Écart en pourcentage de chaque année par rapport à la moyenne de référence
+          de la période complète. Permet d'identifier les années extrêmes
+          indépendamment des volumes absolus.
+        </div>
+        <span class="method-tag">Climatologie</span>
+      </div>
+
+      <div class="method-card">
+        <span class="method-icon">🌧️</span>
+        <div class="method-title">Détection d'événement</div>
+        <div class="method-desc">
+          Début de saison des pluies défini par le critère agronomique :
+          cumul sur 3 jours consécutifs ≥ 20 mm après le 1er avril
+          (jour julien 90). Détecté par fenêtre glissante sur la série journalière.
+        </div>
+        <span class="method-tag">Agronomie</span>
+      </div>
+
+      <div class="method-card">
+        <span class="method-icon">📋</span>
+        <div class="method-title">Statistiques descriptives</div>
+        <div class="method-desc">
+          Calcul de la moyenne, de l'écart-type, du minimum et du maximum par
+          ville et par période. Permet la comparaison du gradient climatique
+          Nord-Sud et de la variabilité interannuelle.
+        </div>
+        <span class="method-tag">Statistiques</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CODE ===== -->
+<section id="code">
+  <div class="container">
+    <div class="section-tag">Implémentation</div>
+    <h2 class="section-title">Code <span>Source</span></h2>
+    <div class="title-bar"></div>
+    <p class="section-lead">
+      Extraits du code Python utilisé pour le téléchargement des données,
+      l'analyse et la détection du début de saison.
+    </p>
+
+    <div class="code-tabs">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('tab-fetch', this)">fetch_data.py</button>
+        <button class="tab-btn" onclick="showTab('tab-analyse', this)">analyse.py</button>
+        <button class="tab-btn" onclick="showTab('tab-saison', this)">debut_saison.py</button>
+      </div>
+
+      <!-- Tab 1 -->
+      <div class="tab-panel active" id="tab-fetch">
+        <div class="code-filename">fetch_data.py — Téléchargement API NASA POWER</div>
+        <pre><code class="language-python">import requests
+import pandas as pd
+import os, time
+
+VILLES = {
+    "Ouagadougou":    {"lat": 12.36, "lon": -1.53},
+    "Bobo-Dioulasso": {"lat": 11.18, "lon": -4.30},
+    "Dori":           {"lat": 14.03, "lon": -0.03},
+    "Fada N'Gourma":  {"lat": 12.06, "lon":  0.35},
+    "Gaoua":          {"lat": 10.33, "lon": -3.18},
+    "Dedougou":       {"lat": 12.46, "lon": -3.46},
+}
+PARAMETRES = ["PRECTOTCORR", "T2M_MAX", "T2M_MIN", "RH2M"]
+
+def telecharger_ville(nom, lat, lon):
+    url = "https://power.larc.nasa.gov/api/temporal/daily/point"
+    params = {
+        "parameters": ",".join(PARAMETRES),
+        "community": "AG", "longitude": lon, "latitude": lat,
+        "start": "19900101", "end": "20231231", "format": "JSON",
+    }
+    r = requests.get(url, params=params, timeout=90)
+    r.raise_for_status()
+    params_data = r.json()["properties"]["parameter"]
+    dates = pd.date_range("1990-01-01", "2023-12-31", freq="D")
+    df = pd.DataFrame(index=dates)
+    df.index.name = "date"
+    for param, values in params_data.items():
+        s = pd.Series(values)
+        s.index = pd.to_datetime(s.index, format="%Y%m%d")
+        df[param] = s
+    df.replace(-999.0, pd.NA, inplace=True)
+    df["ville"] = nom
+    return df</code></pre>
+      </div>
+
+      <!-- Tab 2 -->
+      <div class="tab-panel" id="tab-analyse">
+        <div class="code-filename">analyse.py — Cumul annuel &amp; anomalies</div>
+        <pre><code class="language-python">import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+def graphique_cumul_annuel(df):
+    annuel = (
+        df.groupby(["ville", df.index.year])["PRECTOTCORR"]
+        .sum().reset_index()
+        .rename(columns={"date": "annee", "PRECTOTCORR": "cumul_mm"})
+    )
+    fig, ax = plt.subplots(figsize=(13, 6))
+    for ville in annuel["ville"].unique():
+        d = annuel[annuel["ville"] == ville]
+        ax.plot(d["annee"], d["cumul_mm"], label=ville, linewidth=1.6)
+        # Tendance linéaire
+        z = np.polyfit(d["annee"], d["cumul_mm"], 1)
+        p = np.poly1d(z)
+        ax.plot(d["annee"], p(d["annee"]), linestyle="--", linewidth=0.9)
+    ax.set_title("Cumul annuel des précipitations (1990-2023)")
+    ax.legend()
+    plt.savefig("graphiques/01_cumul_annuel.png", dpi=150)
+    plt.show()
+
+def graphique_anomalies(df):
+    annuel = (
+        df.groupby(["ville", df.index.year])["PRECTOTCORR"]
+        .sum().reset_index()
+        .rename(columns={"date": "annee", "PRECTOTCORR": "cumul_mm"})
+    )
+    moyennes = annuel.groupby("ville")["cumul_mm"].transform("mean")
+    annuel["anomalie_pct"] = (annuel["cumul_mm"] - moyennes) / moyennes * 100
+    national = annuel.groupby("annee")["anomalie_pct"].mean().reset_index()
+    fig, ax = plt.subplots(figsize=(13, 5))
+    colors = ["steelblue" if v >= 0 else "tomato" for v in national["anomalie_pct"]]
+    ax.bar(national["annee"], national["anomalie_pct"], color=colors)
+    ax.axhline(0, color="black", linewidth=0.8)
+    plt.savefig("graphiques/05_anomalies_precipitations.png", dpi=150)
+    plt.show()</code></pre>
+      </div>
+
+      <!-- Tab 3 -->
+      <div class="tab-panel" id="tab-saison">
+        <div class="code-filename">debut_saison.py — Détection du début de la saison agricole</div>
+        <pre><code class="language-python">def debut_saison_pluies(pluie_serie):
+    """
+    Retourne le jour julien du début de la saison.
+    Critère agronomique : cumul sur 3 jours >= 20 mm après le 1er avril.
+    """
+    for i in range(90, len(pluie_serie) - 2):
+        cumul3j = pluie_serie.iloc[i:i+3].sum()
+        if cumul3j >= 20:
+            return pluie_serie.index[i].dayofyear
+    return None
+
+def graphique_debut_saison(df):
+    resultats = []
+    for ville in df["ville"].unique():
+        df_v = df[df["ville"] == ville]["PRECTOTCORR"].dropna()
+        for annee in range(1990, 2024):
+            serie = df_v[df_v.index.year == annee]
+            jour = debut_saison_pluies(serie)
+            if jour:
+                resultats.append({"ville": ville, "annee": annee, "jour_debut": jour})
+    res = pd.DataFrame(resultats)
+    # Tracer l'évolution du début de saison par ville
+    fig, ax = plt.subplots(figsize=(13, 6))
+    for ville in res["ville"].unique():
+        d = res[res["ville"] == ville].sort_values("annee")
+        ax.plot(d["annee"], d["jour_debut"], label=ville, marker="o", markersize=3)
+    plt.savefig("graphiques/04_debut_saison_pluies.png", dpi=150)
+    plt.show()</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONCLUSIONS ===== -->
+<section id="conclusions" class="section-alt">
+  <div class="container">
+    <div class="section-tag">Synthèse</div>
+    <h2 class="section-title"><span>Conclusions</span></h2>
+    <div class="title-bar"></div>
+    <p class="section-lead">
+      Cinq grands enseignements issus de l'analyse de 33 années de données
+      météorologiques pour le Burkina Faso.
+    </p>
+
+    <div class="conclusion-timeline">
+
+      <div class="conclusion-item">
+        <div class="conclusion-num">Conclusion 01</div>
+        <div class="conclusion-title">Transition climatique majeure</div>
+        <div class="conclusion-text">
+          Le Burkina Faso est passé d'une longue période sèche
+          (<span class="conclusion-highlight">1990–2004</span>) à une période nettement
+          plus pluvieuse depuis 2008. Ce basculement est cohérent avec la
+          ré-verdification partielle du Sahel ouest-africain observée à l'échelle régionale.
+        </div>
+      </div>
+
+      <div class="conclusion-item">
+        <div class="conclusion-num">Conclusion 02</div>
+        <div class="conclusion-title">Réchauffement climatique documenté</div>
+        <div class="conclusion-text">
+          Un réchauffement de <span class="conclusion-highlight">+0,7 °C à +1,0 °C</span>
+          selon les villes a été mesuré en 33 ans. Bobo-Dioulasso présente la hausse
+          la plus marquée (+1,0 °C). Ce réchauffement menace directement la productivité
+          agricole, chaque degré supplémentaire réduisant les rendements du maïs de 5 à 10 %.
+        </div>
+      </div>
+
+      <div class="conclusion-item">
+        <div class="conclusion-num">Conclusion 03</div>
+        <div class="conclusion-title">Gradient Nord-Sud marqué</div>
+        <div class="conclusion-text">
+          La zone <span class="conclusion-highlight">Sud (Bobo, Gaoua)</span> reçoit
+          1 000–1 100 mm/an et présente des conditions favorables à l'agriculture
+          diversifiée. Le <span class="conclusion-highlight">Nord-Sahel (Dori)</span>
+          avec seulement 516 mm/an, des températures max dépassant 36 °C et une
+          variabilité extrême, est très vulnérable aux chocs climatiques.
+        </div>
+      </div>
+
+      <div class="conclusion-item">
+        <div class="conclusion-num">Conclusion 04</div>
+        <div class="conclusion-title">Recommandations pour les semis</div>
+        <div class="conclusion-text">
+          D'après l'analyse de la climatologie mensuelle et du début de saison :
+          <strong>fin mai au Sud</strong> (Bobo, Gaoua),
+          <strong>mi-juin au Centre</strong> (Ouagadougou, Dedougou, Fada).
+          Au <strong>Nord (Dori)</strong>, le maïs est déconseillé — privilégier
+          mil et sorgho avec un semis en juillet.
+        </div>
+      </div>
+
+      <div class="conclusion-item">
+        <div class="conclusion-num">Conclusion 05</div>
+        <div class="conclusion-title">Variabilité : principal risque alimentaire</div>
+        <div class="conclusion-text">
+          Les écarts interannuels de <span class="conclusion-highlight">−29 %</span>
+          (2002) à <span class="conclusion-highlight">+18 %</span> (depuis 2008)
+          autour de la moyenne nationale constituent le principal risque pour la
+          sécurité alimentaire. Cette variabilité dépasse souvent la capacité
+          d'adaptation des petits agriculteurs sans mécanismes d'assurance ou de stockage.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-flag">
+    <span style="background:var(--red)"></span>
+    <span style="background:var(--green)"></span>
+    <span style="background:var(--yellow)"></span>
+  </div>
+  <p>
+    <strong>Données :</strong> NASA POWER &nbsp;|&nbsp;
+    <strong>Analyse réalisée avec</strong> Python (pandas, matplotlib, numpy) &nbsp;|&nbsp;
+    <strong>2024</strong>
+  </p>
+  <p style="margin-top:0.5rem;font-size:0.8rem;opacity:0.5;">
+    Analyse Météorologique du Burkina Faso · 1990–2023
+  </p>
+</footer>
+
+<!-- ===== BACK TO TOP ===== -->
+<button id="back-top" title="Retour en haut" onclick="window.scrollTo({top:0,behavior:'smooth'})">▲</button>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  // ---- highlight.js init ----
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('pre code').forEach(block => {
+      hljs.highlightElement(block);
+    });
+  });
+
+  // ---- Code tabs ----
+  function showTab(tabId, btn) {
+    // Hide all panels
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    // Show selected
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // ---- Mobile nav toggle ----
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('nav-links');
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  // Close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // ---- Active nav link + scroll progress + back-to-top ----
+  const sections   = document.querySelectorAll('section[id], div[id="graphiques"]');
+  const navLinkEls = document.querySelectorAll('.nav-link');
+  const progressBar = document.getElementById('scroll-progress');
+  const backTop     = document.getElementById('back-top');
+
+  // Map section IDs to nav hrefs
+  const sectionIds = ['accueil', 'donnees', 'graphiques', 'methodes', 'code', 'conclusions'];
+
+  window.addEventListener('scroll', () => {
+    const scrollTop    = window.scrollY;
+    const docHeight    = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPct    = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+    // Scroll progress bar
+    progressBar.style.width = scrollPct + '%';
+
+    // Back to top visibility
+    backTop.classList.toggle('visible', scrollTop > 400);
+
+    // Active nav link detection
+    let current = 'accueil';
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        const top = el.getBoundingClientRect().top;
+        if (top <= 80) current = id;
+      }
+    });
+
+    navLinkEls.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+
+  // ---- Intersection Observer for fade-in (optional enhancement) ----
+  if ('IntersectionObserver' in window) {
+    const style = document.createElement('style');
+    style.textContent = `
+      .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+      .fade-in.visible { opacity: 1; transform: none; }
+    `;
+    document.head.appendChild(style);
+
+    const targets = document.querySelectorAll(
+      '.stat-card, .method-card, .conclusion-item, .interpretation, .data-source-box, .quality-box'
+    );
+    targets.forEach(el => el.classList.add('fade-in'));
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    targets.forEach(el => observer.observe(el));
+  }
+</script>
+
+</body>
+</html>
