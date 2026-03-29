@@ -1,8 +1,11 @@
 # Fichier de notes internes — ne pas publier
 notes_qualite_donnees.txt
 
-# Données brutes téléchargées
+# Données brutes téléchargées (CSV volumineux)
 donnees/
+
+# data.json doit être commité (pré-généré localement)
+!data.json
 
 # Rapport PDF
 rapport_meteo_burkina.pdf
