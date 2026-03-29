@@ -314,6 +314,191 @@ footer span { color: var(--vert); font-weight: 600; }
 }
 
 /* ══════════════════════════════════════════════════════
+   SECTION CALENDRIER CULTURAL
+   ══════════════════════════════════════════════════════ */
+
+.culture-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--gris-bord);
+}
+
+.culture-section-header { margin-bottom: 1rem; }
+
+.culture-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--texte);
+}
+
+.culture-section-sub {
+  font-size: .85rem;
+  color: var(--texte-sec);
+  margin-top: .25rem;
+}
+
+.culture-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-culture {
+  padding: .5rem 1.1rem;
+  border: 2px solid var(--gris-bord);
+  border-radius: 24px;
+  background: #fff;
+  cursor: pointer;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--texte);
+  transition: all .2s;
+}
+
+.btn-culture:hover { border-color: var(--vert); color: var(--vert); }
+.btn-culture.active { background: var(--vert); border-color: var(--vert); color: #fff; }
+
+/* Résultat culture */
+#culture-result { overflow: hidden; max-height: 0; transition: max-height .4s ease; }
+#culture-result.visible { max-height: 1000px; }
+
+.culture-card {
+  border: 1px solid var(--gris-bord);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: .5rem;
+}
+
+.culture-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--gris-bg);
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gris-bord);
+}
+
+.culture-icon { font-size: 2.2rem; }
+.culture-nom  { font-size: 1.15rem; font-weight: 700; }
+.culture-meta { font-size: .82rem; color: var(--texte-sec); margin-top: .2rem; }
+
+.culture-periodes {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gris-bord);
+}
+
+.periode-item {
+  flex: 1;
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  text-align: center;
+}
+
+.periode-item.semis   { background: #e8f5e9; border: 1px solid #a5d6a7; }
+.periode-item.recolte { background: #fff3e0; border: 1px solid #ffcc80; }
+
+.periode-label { font-size: .78rem; font-weight: 600; color: var(--texte-sec); margin-bottom: .25rem; }
+.periode-val   { font-size: 1rem; font-weight: 700; }
+
+/* Calendrier */
+.culture-calendrier {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gris-bord);
+}
+
+.cal-titre { font-size: .85rem; font-weight: 700; color: var(--texte-sec); margin-bottom: .6rem; }
+
+.cal-grille {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+}
+
+.cal-mois { text-align: center; }
+
+.cal-label { font-size: .65rem; color: var(--texte-sec); margin-bottom: 3px; }
+
+.cal-barre {
+  height: 28px;
+  border-radius: 4px;
+  background: var(--gris-bg);
+  border: 1px solid var(--gris-bord);
+}
+
+.cal-semis   .cal-barre { background: #66bb6a; border-color: #43a047; }
+.cal-recolte .cal-barre { background: #ffa726; border-color: #fb8c00; }
+
+.cal-tag {
+  font-size: .58rem;
+  font-weight: 700;
+  margin-top: 2px;
+  color: var(--texte-sec);
+}
+
+.cal-semis   .cal-tag { color: #2e7d32; }
+.cal-recolte .cal-tag { color: #e65100; }
+
+.cal-legende {
+  display: flex;
+  gap: 1rem;
+  margin-top: .6rem;
+  font-size: .78rem;
+}
+
+.leg-semis::before   { content: "■"; color: #66bb6a; margin-right: 4px; }
+.leg-recolte::before { content: "■"; color: #ffa726; margin-right: 4px; }
+
+/* Viabilité */
+.culture-viabilite { padding: 1rem 1.25rem; border-bottom: 1px solid var(--gris-bord); }
+.viab-titre { font-size: .85rem; font-weight: 700; color: var(--texte-sec); margin-bottom: .6rem; }
+
+.viab-grille {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .4rem;
+}
+
+.viab-item {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.viab-ville { font-size: .78rem; color: var(--texte-sec); }
+
+.viab-note {
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .2rem .5rem;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.v-excel  { background: #e8f5e9; color: #2e7d32; }
+.v-bon    { background: #e3f2fd; color: #1565c0; }
+.v-moyen  { background: #fff8e1; color: #f57f17; }
+.v-non    { background: #ffebee; color: #c62828; }
+
+/* Note agronomique */
+.culture-note {
+  padding: .9rem 1.25rem;
+  font-size: .85rem;
+  color: var(--texte-sec);
+  background: #fafafa;
+}
+
+@media (max-width: 700px) {
+  .viab-grille { grid-template-columns: repeat(2, 1fr); }
+  .cal-grille  { grid-template-columns: repeat(6, 1fr); }
+  .culture-periodes { flex-direction: column; }
+}
+
+/* ══════════════════════════════════════════════════════
    SECTION ANALYSE & CONCLUSIONS
    ══════════════════════════════════════════════════════ */
 

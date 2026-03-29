@@ -76,6 +76,16 @@ Ouvre [http://localhost:5000](http://localhost:5000)
 
 ---
 
+## Fonctionnalités du dashboard
+
+| Fonctionnalité | Description |
+|---------------|-------------|
+| **Filtre par ville** | Filtre tous les graphiques simultanément (corrigé pour les graphiques 1 et 2) |
+| **Calendrier cultural** | Recherche par culture (Maïs, Sorgho, Mil, Riz, Bissap) — affiche semis, récolte, viabilité par ville |
+| **5 graphiques interactifs** | Cumul annuel, climatologie mensuelle, températures, anomalies, début de saison |
+| **Section Analyse & Conclusions** | Résultats clés, questions agricoles, conclusions avec timeline |
+| **Tableau statistique** | Résumé par ville (pluie, Tmax, Tmin, humidité) |
+
 ## Analyses disponibles
 
 ### Graphiques générés (`burkina_meteo_complet.py`)
@@ -95,6 +105,16 @@ python generer_rapport.py
 ```
 
 ---
+
+## Cultures couvertes dans le calendrier cultural
+
+| Culture | Semis | Récolte | Zones viables |
+|---------|-------|---------|---------------|
+| 🌽 Maïs | Mai – mi-Juin | Août – Septembre | Sud, Centre |
+| 🌾 Sorgho | Juin – Juillet | Septembre – Octobre | Toutes zones |
+| 🌿 Mil | Juin – Juillet | Septembre – Octobre | Centre, Nord (prioritaire) |
+| 🍚 Riz | Juin – Juillet | Octobre – Novembre | Sud (pluvial), Centre/Nord (irrigué) |
+| 🌺 Bissap | Juillet – Août | Novembre – Décembre | Sud, Centre |
 
 ## Notions d'analyse appliquées
 
