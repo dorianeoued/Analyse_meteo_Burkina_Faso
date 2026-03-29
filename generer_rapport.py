@@ -248,6 +248,40 @@ def generer_pdf():
         "journalières corrigées (PRECTOTCORR), températures min/max (T2M_MIN, T2M_MAX), "
         "humidité relative (RH2M). Communauté : Agriculture (AG).")
 
+    # Encadré outils techniques
+    pdf.ln(6)
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(0, 8, "Outils et technologies utilisés", border="B", fill=True,
+             new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 10)
+    outils = [
+        "Python : pandas (manipulation), matplotlib/numpy (visualisation et statistiques)",
+        "fpdf2 : génération du rapport PDF",
+        "Flask : backend de l'application web avec API REST",
+        "Chart.js : graphiques interactifs dans le navigateur",
+        "Render : hébergement cloud de l'application web",
+        "GitHub : versionnement du code source (dorianeoued/Analyse_meteo_Burkina_Faso)",
+    ]
+    for o in outils:
+        pdf.puce(o)
+
+    pdf.ln(4)
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.cell(0, 8, "Notions d'analyse de données appliquées", border="B", fill=True,
+             new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 10)
+    notions = [
+        "Nettoyage des données : remplacement des valeurs sentinelles -999.0 par NaN",
+        "Réechantillonnage temporel : agrégation journalier vers mensuel et annuel",
+        "Analyse de tendance : régression linéaire (np.polyfit) sur 33 ans",
+        "Calcul d'anomalies : écart en % par rapport à la moyenne de référence 1990-2023",
+        "Détection d'événement : début de saison = cumul 3 jours consécutifs >= 20 mm",
+        "Statistiques descriptives : moyenne, écart-type, min/max par groupe (ville, mois, année)",
+    ]
+    for n in notions:
+        pdf.puce(n)
+
     # ── Sections graphiques ────────────────────────────────────────
     for img_path, titre, interpretations in GRAPHIQUES:
         pdf.add_page()
@@ -307,6 +341,65 @@ def generer_pdf():
         pdf.set_text_color(0, 0, 0)
         pdf.multi_cell(0, 6, texte)
         pdf.ln(3)
+
+    # ── Page application web ──────────────────────────────────────
+    pdf.add_page()
+    pdf.set_text_color(0, 0, 0)
+    pdf.titre_section("Application Web Interactive")
+    pdf.ln(2)
+
+    pdf.set_font("Helvetica", "", 10)
+    pdf.multi_cell(0, 6,
+        "Les analyses de ce rapport ont été intégrées dans une application web "
+        "interactive déployée sur Render. L'application permet de visualiser "
+        "dynamiquement les données météorologiques sans avoir à exécuter de code Python.")
+    pdf.ln(4)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(34, 85, 34)
+    pdf.cell(0, 7, "Architecture technique", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_text_color(0, 0, 0)
+    archi = [
+        "Backend Flask (Python) : API REST servant les données pré-calculées depuis data.json",
+        "Frontend Chart.js : 5 graphiques interactifs avec filtre par ville",
+        "Données pré-agrégées : cumul annuel, climatologie mensuelle, températures, "
+        "anomalies et début de saison - calculées depuis les 12 418 jours × 6 villes",
+        "Déploiement continu via GitHub Actions sur Render (plan gratuit)",
+    ]
+    for a in archi:
+        pdf.puce(a)
+
+    pdf.ln(4)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(34, 85, 34)
+    pdf.cell(0, 7, "Fonctionnalités de l'application", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_text_color(0, 0, 0)
+    fonctions = [
+        "Graphique 1 : Cumul annuel des précipitations - toutes villes superposées",
+        "Graphique 2 : Climatologie mensuelle avec sélecteur de ville",
+        "Graphique 3 : Tendance des températures max par ville",
+        "Graphique 4 : Anomalies nationales (bleu = excédent, rouge = déficit)",
+        "Graphique 5 : Évolution du début de saison des pluies avec repères calendaires",
+        "Tableau de statistiques résumées par ville",
+    ]
+    for f in fonctions:
+        pdf.puce(f)
+
+    pdf.ln(4)
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.set_text_color(34, 85, 34)
+    pdf.cell(0, 7, "Code source", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("Helvetica", "", 10)
+    pdf.multi_cell(0, 6,
+        "Le code source complet est disponible sur GitHub :\n"
+        "github.com/dorianeoued/Analyse_meteo_Burkina_Faso\n\n"
+        "Fichiers principaux :\n"
+        "  - fetch_data.py    : téléchargement NASA POWER\n"
+        "  - prepare_data.py  : pré-calcul des agrégations vers data.json\n"
+        "  - app.py           : serveur Flask et API REST\n"
+        "  - script.js        : dashboard Chart.js\n"
+        "  - render.yaml      : configuration de déploiement")
 
     # ── Sauvegarde ─────────────────────────────────────────────────
     sortie = "rapport_meteo_burkina.pdf"
