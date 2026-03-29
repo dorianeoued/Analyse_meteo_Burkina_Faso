@@ -312,3 +312,185 @@ footer span { color: var(--vert); font-weight: 600; }
   .hero-stat .val { font-size: 1.5rem; }
   .container { padding: 1rem .75rem; }
 }
+
+/* ══════════════════════════════════════════════════════
+   SECTION ANALYSE & CONCLUSIONS
+   ══════════════════════════════════════════════════════ */
+
+.analyse-section {
+  background: #0f1923;
+  color: #e8edf2;
+  padding: 4rem 0 3rem;
+}
+
+.analyse-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.analyse-main-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin-bottom: .75rem;
+}
+
+.analyse-intro {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-bottom: 3rem;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.analyse-block {
+  margin-bottom: 3.5rem;
+}
+
+.analyse-block-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--vert-clair);
+  border-left: 4px solid var(--vert);
+  padding-left: .75rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* ── Résultats clés ── */
+.resultats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.resultat-card {
+  background: #1e2d3d;
+  border: 1px solid #2d4a63;
+  border-radius: 10px;
+  padding: 1.25rem;
+  transition: border-color .2s;
+}
+
+.resultat-card:hover { border-color: var(--vert); }
+
+.resultat-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+
+.resultat-titre {
+  font-weight: 700;
+  font-size: .95rem;
+  color: #fff;
+  margin-bottom: .4rem;
+}
+
+.resultat-texte {
+  font-size: .875rem;
+  color: #94a3b8;
+  line-height: 1.55;
+}
+
+/* ── Questions/Réponses ── */
+.qa-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.qa-item {
+  background: #1e2d3d;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #2d4a63;
+}
+
+.qa-question {
+  background: #162232;
+  padding: .85rem 1.25rem;
+  font-weight: 700;
+  font-size: .95rem;
+  color: #e2e8f0;
+  border-left: 4px solid var(--vert);
+  cursor: pointer;
+}
+
+.qa-reponse {
+  padding: 1rem 1.25rem;
+  font-size: .875rem;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+
+.zone-tag {
+  display: inline-block;
+  padding: .15rem .55rem;
+  border-radius: 4px;
+  font-size: .78rem;
+  font-weight: 700;
+  margin-right: .25rem;
+}
+
+.zone-tag.sud    { background: #14532d; color: #86efac; }
+.zone-tag.centre { background: #1e3a5f; color: #93c5fd; }
+.zone-tag.nord   { background: #7c2d12; color: #fdba74; }
+
+/* ── Timeline conclusions ── */
+.conclusions-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.conclusions-timeline::before {
+  content: '';
+  position: absolute;
+  left: .9rem;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--vert), #1e3a5f);
+}
+
+.conclusion-item {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.1rem 0;
+  position: relative;
+}
+
+.conclusion-num {
+  position: absolute;
+  left: -2.5rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  background: var(--vert);
+  color: #fff;
+  font-weight: 700;
+  font-size: .85rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  top: 1rem;
+}
+
+.conclusion-body {
+  background: #1e2d3d;
+  border: 1px solid #2d4a63;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: .875rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  flex: 1;
+}
+
+.conclusion-body strong { color: #e2e8f0; }
+
+/* ── Responsive analyse ── */
+@media (max-width: 700px) {
+  .resultats-grid { grid-template-columns: 1fr; }
+  .analyse-main-title { font-size: 1.5rem; }
+}
