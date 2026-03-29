@@ -7,8 +7,9 @@ donnees/
 # data.json doit être commité (pré-généré localement)
 !data.json
 
-# Rapport PDF
+# Rapport PDF et script de génération (usage personnel)
 rapport_meteo_burkina.pdf
+generer_rapport.py
 
 # Fichiers Python compilés
 __pycache__/
