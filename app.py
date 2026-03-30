@@ -5,9 +5,16 @@ app.py  –  Serveur Flask pour l'analyse météorologique du Burkina Faso
 import json
 import os
 from flask import Flask, jsonify, request, send_from_directory
+from flask_cors import CORS
 
 app = Flask(__name__, static_folder=".", static_url_path="")
+CORS(app)
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers["X-Frame-Options"] = "ALLOWALL"
+    response.headers["Content-Security-Policy"] = "frame-ancestors *"
+    return response
 # ── Chargement unique des données au démarrage ───────────────────────────────
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data.json")
 with open(DATA_PATH, "r", encoding="utf-8") as f:
